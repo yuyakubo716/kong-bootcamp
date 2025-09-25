@@ -36,18 +36,15 @@ jobs:
         run: |
           # Kong Gatewayの最新バージョンとタグ付きバージョンをプル
           docker pull kong/kong-gateway:latest
-          docker pull kong/kong-gateway:3.4.1  # 必要に応じて特定のバージョンを指定
 
       # ステップ3: イメージにGHCR用のタグを付ける
       - name: Tag images for GHCR
         run: |
           # GHCRのURLとリポジトリ名を使ってタグ付け
           docker tag kong/kong-gateway:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          docker tag kong/kong-gateway:3.4.1 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:3.4.1
       
       # ステップ4: GHCRにイメージをプッシュ
       - name: Push images to GHCR
         run: |
           # タグ付けしたイメージをGHCRにプッシュ
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:3.4.1
