@@ -33,9 +33,16 @@
 
 ## 使用方法
 
+### 方法1: 完全なプロセス
 1. GitHub リポジトリの「Actions」タブを開く
 2. 「Push Kong Gateway Image to GHCR」ワークフローを手動で実行
 3. ワークフロー完了後、「Scan Kong Gateway Image」ワークフローが自動的に開始
+4. スキャン結果は「Security」タブの「Code scanning alerts」で確認可能
+
+### 方法2: 既存イメージのスキャンのみ
+1. GitHub リポジトリの「Actions」タブを開く
+2. 「Scan Kong Gateway Image」ワークフローを選択し「Run workflow」ボタンをクリック
+3. ブランチを選択して「Run workflow」ボタンをクリック
 4. スキャン結果は「Security」タブの「Code scanning alerts」で確認可能
 
 **注意**: 

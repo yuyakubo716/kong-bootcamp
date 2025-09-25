@@ -22,8 +22,12 @@ jobs:
   scan-image:
     # Ubuntuの最新バージョン上で実行
     runs-on: ubuntu-latest
-    # 前のワークフロー（イメージ構築）が成功した場合のみ実行
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # トリガーに応じた条件分岐
+    # workflow_runイベントの場合は前のワークフローが成功した場合のみ実行
+    # workflow_dispatchイベント（手動実行）の場合は常に実行
+    if: >-
+      github.event_name == 'workflow_dispatch' || 
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     # 必要な権限の設定
     permissions:
       contents: read       # リポジトリのコンテンツを読み取る権限
