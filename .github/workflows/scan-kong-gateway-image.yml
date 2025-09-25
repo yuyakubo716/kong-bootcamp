@@ -29,6 +29,8 @@ jobs:
       contents: read       # リポジトリのコンテンツを読み取る権限
       packages: read       # GitHubパッケージ（コンテナイメージ）を読み取る権限
       security-events: write  # セキュリティスキャン結果をGitHubセキュリティタブに書き込む権限
+      id-token: write      # OIDC認証のために必要
+      actions: read        # ワークフロー実行の情報へのアクセス権
 
     # 実行する一連のステップ
     steps:
@@ -61,25 +63,33 @@ jobs:
 
       # ステップ5: Trivyのスキャン結果をGitHub Security Insightsにアップロード
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'  # Trivyの結果ファイル
+          category: 'trivy-scan'  # 結果をカテゴリ分けするためのラベル
 
       # ステップ6: Snykを使用した追加の脆弱性スキャン
       # Snykは、より詳細な脆弱性分析と継続的なモニタリング機能を提供
       - name: Scan with Snyk
         uses: snyk/actions/docker@master
+        # Snykの実行は任意（トークンが設定されていない場合は実行しない）
+        continue-on-error: true
         env:
           # Snykの認証トークン（GitHub Secretsに設定する必要あり）
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest  # スキャン対象のイメージ
           args: --file=Dockerfile  # Dockerfile参照してコンテキスト情報を取得
+          # エラーが発生しても続行
+          continue-on-error: true
+          # SARIFレポート形式を有効化
+          sarif: true
 
       # ステップ7: Snykのスキャン結果をGitHub Security Insightsにアップロード
-      # if: always() は前のステップが失敗してもこのステップを実行する
+      # Snyk結果ファイルが存在する場合のみ実行
       - name: Upload Snyk scan result
-        uses: github/codeql-action/upload-sarif@v2
-        if: always()  # 前のステップが失敗しても必ず実行
+        uses: github/codeql-action/upload-sarif@v3
+        if: ${{ success() && hashFiles('snyk.sarif') != '' }}
         with:
           sarif_file: snyk.sarif  # Snykの結果ファイル
+          category: 'snyk-scan'  # 結果をカテゴリ分けするためのラベル

@@ -38,4 +38,6 @@
 3. ワークフロー完了後、「Scan Kong Gateway Image」ワークフローが自動的に開始
 4. スキャン結果は「Security」タブの「Code scanning alerts」で確認可能
 
-**注意**: Snyk スキャンを使用するには、GitHub リポジトリの Secrets 設定で `SNYK_TOKEN` を設定する必要があります。
+**注意**: 
+- Snyk スキャンを使用するには、GitHub リポジトリの Secrets 設定で `SNYK_TOKEN` を設定する必要があります。Tokenが設定されていなくても、Trivyスキャンは実行されます。
+- スキャン結果をGitHub Security機能にアップロードするには、リポジトリの設定で「Code scanning」機能を有効にする必要があります。
