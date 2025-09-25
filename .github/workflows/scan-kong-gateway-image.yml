@@ -14,7 +14,7 @@ on:
 # 環境変数の設定
 env:
   REGISTRY: ghcr.io  # GitHubのコンテナレジストリのURL
-  IMAGE_NAME: ${{ github.repository }}/kong-gateway  # スキャン対象のイメージ名
+  IMAGE_NAME: api-pf/kong-bootcamp/kong-gateway  # スキャン対象のイメージ名（小文字のみ）
 
 # ジョブの定義
 jobs:
