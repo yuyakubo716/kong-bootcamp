@@ -37,14 +37,22 @@
 1. GitHub リポジトリの「Actions」タブを開く
 2. 「Push Kong Gateway Image to GHCR」ワークフローを手動で実行
 3. ワークフロー完了後、「Scan Kong Gateway Image」ワークフローが自動的に開始
-4. スキャン結果は「Security」タブの「Code scanning alerts」で確認可能
+4. ワークフロー完了後、「Summary」タブでスキャン結果のアーティファクトをダウンロード可能
 
 ### 方法2: 既存イメージのスキャンのみ
 1. GitHub リポジトリの「Actions」タブを開く
 2. 「Scan Kong Gateway Image」ワークフローを選択し「Run workflow」ボタンをクリック
 3. ブランチを選択して「Run workflow」ボタンをクリック
-4. スキャン結果は「Security」タブの「Code scanning alerts」で確認可能
+4. ワークフロー完了後、「Summary」タブでスキャン結果のアーティファクトをダウンロード可能
+
+### スキャン結果の確認方法
+1. ワークフロー実行の詳細ページを開く
+2. 「Summary」タブに移動
+3. 「Artifacts」セクションで以下のファイルをダウンロード:
+   - `trivy-scan-results` - Trivyによるスキャン結果（SARIF形式とテキスト形式）
+   - `snyk-scan-results` - Snykによるスキャン結果（SARIF形式とテキスト形式、Snyk使用時のみ）
 
 **注意**: 
 - Snyk スキャンを使用するには、GitHub リポジトリの Secrets 設定で `SNYK_TOKEN` を設定する必要があります。Tokenが設定されていなくても、Trivyスキャンは実行されます。
-- スキャン結果をGitHub Security機能にアップロードするには、リポジトリの設定で「Code scanning」機能を有効にする必要があります。
+- GitHub Advanced Security（有料機能）が有効な場合は、スキャン結果を「Security」タブの「Code scanning alerts」でも確認できます。
+- ほとんどの場合、無料プランではAdvanced Securityは利用できないため、アーティファクトとして保存された結果を利用します。
