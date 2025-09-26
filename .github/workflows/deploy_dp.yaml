@@ -69,7 +69,7 @@ jobs:
           cat <<EOF > ./values.yaml
           image:
             repository: ${{ vars.KONG_REPO }}
-            tag: "${{ vars.KONG_VER }}"
+            tag: '${{ vars.KONG_VER }}'
             pullSecrets:
               - ghcr-secret
 
