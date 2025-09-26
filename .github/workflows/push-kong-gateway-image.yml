@@ -41,10 +41,10 @@ jobs:
       - name: Tag images for GHCR
         run: |
           # GHCRのURLとリポジトリ名を使ってタグ付け
-          docker tag kong/kong-gateway:${{ vars.KONG_VER }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ vars.KONG_VER }}
+          docker tag kong/kong-gateway:"${{ vars.KONG_VER }}" ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:"${{ vars.KONG_VER }}"
       
       # ステップ4: GHCRにイメージをプッシュ
       - name: Push images to GHCR
         run: |
           # タグ付けしたイメージをGHCRにプッシュ
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ vars.KONG_VER }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:"${{ vars.KONG_VER }}"
