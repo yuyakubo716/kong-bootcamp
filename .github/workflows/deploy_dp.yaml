@@ -15,17 +15,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y jq openssl
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Azure Login
+        uses: azure/login@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Set up kubeconfig for EKS
-        run: |
-          aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }}
+      - name: Set up kubeconfig for AKS
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: ${{ vars.AKS_RESOURCE_GROUP_NAME }}
+          cluster-name: ${{ vars.AKS_CLUSTER_NAME }}
+          # オプション: admin: 'false'
 
       - name: Get Control Plane ID and upload TLS certs
         id: get_cp
@@ -33,7 +33,7 @@ jobs:
           CP_ID=$(curl -s -X GET \
             -H "Authorization: Bearer ${{ secrets.KONNECT_TOKEN }}" \
             "${KONNECT_API}/control-planes" \
-            | jq -r --arg name "${{ vars.CP_NAME }}" '.data[] | select(.name==$name) | .id')
+            | jq -r --arg name "${{ vars.CONTROL_PLANE }}" '.data[] | select(.name==$name) | .id')
           mkdir certs
           openssl req -new -x509 -nodes -newkey rsa:2048 \
             -subj "/CN=kongdp/C=US" \
@@ -58,8 +58,8 @@ jobs:
 
       - name: Create Kubernetes namespace and TLS secret
         run: |
-          kubectl create ns kong || true
-          kubectl create secret tls kong-cluster-cert -n kong \
+          kubectl create ns ${{ vars.KONG_NAMESPACE }} || true
+          kubectl create secret tls kong-cluster-cert -n ${{ vars.KONG_NAMESPACE }} \
             --cert=./certs/tls.crt \
             --key=./certs/tls.key \
             --dry-run=client -o yaml | kubectl apply -f -
@@ -107,13 +107,18 @@ jobs:
             requests:
               cpu: 1
               memory: "2Gi"
+
+          serviceMonitor:
+            enabled: true
+            labels:
+              release: prometheus-operator
           EOF
 
       - name: Deploy with Helm
         run: |
           helm repo add kong https://charts.konghq.com
           helm repo update
-          helm upgrade -i my-kong kong/kong -n kong --values ./values.yaml --debug --wait
+          helm upgrade -i kong-iac kong/kong -n ${{ vars.KONG_NAMESPACE }} --values ./values.yaml --debug --wait
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -123,7 +128,3 @@ jobs:
             ./values.yaml
             ./certs/tls.crt
             ./certs/tls.key
-EOF
-git add -A 
-git commit -m "Initial Commit" 
-git push origin main
