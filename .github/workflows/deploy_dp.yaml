@@ -7,7 +7,7 @@ jobs:
   deploy-dp:
     runs-on: ubuntu-latest
     env:
-      KONNECT_API: https://${{ vars.KONNECT_REGION }}.api.konghq.com/v3
+      KONNECT_API: https://${{ vars.KONNECT_REGION }}.api.konghq.com/v2
 
     steps:
       - name: Set up dependencies
