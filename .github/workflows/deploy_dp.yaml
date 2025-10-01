@@ -114,19 +114,35 @@ jobs:
               release: prometheus-operator
           EOF
 
-      - name: Check and fix Helm release status
+      - name: Clean up locked Helm release
         run: |
-          # Helmリリースの状態を確認し、ロックされている場合は修復
-          if helm list -n ${{ vars.KONG_NAMESPACE }} | grep -q kong-iac; then
-            RELEASE_STATUS=$(helm status kong-iac -n ${{ vars.KONG_NAMESPACE }} -o json | jq -r '.info.status')
+          # Helmのロックされたリリース用Secretを検索して削除
+          echo "Checking for locked Helm secrets..."
+
+          # pending状態のSecretを検索
+          PENDING_SECRETS=$(kubectl get secrets -n ${{ vars.KONG_NAMESPACE }} \
+            -l "owner=helm,status in (pending-install,pending-upgrade,pending-rollback),name=kong-iac" \
+            -o name 2>/dev/null || true)
+
+          if [ -n "$PENDING_SECRETS" ]; then
+            echo "Found locked Helm secrets. Deleting..."
+            echo "$PENDING_SECRETS"
+            echo "$PENDING_SECRETS" | xargs -r kubectl delete -n ${{ vars.KONG_NAMESPACE }}
+            echo "Locked secrets deleted."
+          else
+            echo "No locked secrets found."
+          fi
+
+          # リリースが存在する場合は状態を確認
+          if helm list -n ${{ vars.KONG_NAMESPACE }} -a | grep -q kong-iac; then
+            RELEASE_STATUS=$(helm status kong-iac -n ${{ vars.KONG_NAMESPACE }} -o json 2>/dev/null | jq -r '.info.status' || echo "unknown")
             echo "Current release status: $RELEASE_STATUS"
             
-            if [ "$RELEASE_STATUS" = "pending-install" ] || [ "$RELEASE_STATUS" = "pending-upgrade" ] || [ "$RELEASE_STATUS" = "pending-rollback" ]; then
-              echo "Release is locked in $RELEASE_STATUS state. Rolling back to clear lock..."
-              helm rollback kong-iac -n ${{ vars.KONG_NAMESPACE }} || true
+            if [ "$RELEASE_STATUS" = "failed" ] || [ "$RELEASE_STATUS" = "pending-install" ] || [ "$RELEASE_STATUS" = "pending-upgrade" ]; then
+              echo "Release is in $RELEASE_STATUS state. Attempting rollback or uninstall..."
+              helm rollback kong-iac -n ${{ vars.KONG_NAMESPACE }} 2>/dev/null || \
+              helm uninstall kong-iac -n ${{ vars.KONG_NAMESPACE }} --wait || true
             fi
-          else
-            echo "No existing release found. Proceeding with fresh install."
           fi
 
       - name: Deploy with Helm
