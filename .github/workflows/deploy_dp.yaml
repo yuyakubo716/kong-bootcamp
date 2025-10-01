@@ -56,13 +56,27 @@ jobs:
           echo "tp_endpoint=$TP_ENDPOINT" >> "$GITHUB_OUTPUT"
           echo "cp_endpoint=$CP_ENDPOINT" >> "$GITHUB_OUTPUT"
 
-      - name: Create Kubernetes namespace and TLS secret
+      - name: Create Kubernetes namespace and secrets
         run: |
+          # Namespaceを作成
           kubectl create ns ${{ vars.KONG_NAMESPACE }} || true
+
+          # TLS証明書用のSecretを作成
           kubectl create secret tls kong-cluster-cert -n ${{ vars.KONG_NAMESPACE }} \
             --cert=./certs/tls.crt \
             --key=./certs/tls.key \
             --dry-run=client -o yaml | kubectl apply -f -
+
+          # GHCR用のイメージPull Secretを作成
+          kubectl create secret docker-registry ghcr-secret \
+            -n ${{ vars.KONG_NAMESPACE }} \
+            --docker-server=ghcr.io \
+            --docker-username=${{ github.actor }} \
+            --docker-password=${{ secrets.GITHUB_TOKEN }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          echo "Created secrets:"
+          kubectl get secrets -n ${{ vars.KONG_NAMESPACE }} | grep -E 'kong-cluster-cert|ghcr-secret'
 
       - name: Generate values.yaml
         run: |
@@ -149,7 +163,33 @@ jobs:
         run: |
           helm repo add kong https://charts.konghq.com
           helm repo update
-          helm upgrade -i kong-iac kong/kong -n ${{ vars.KONG_NAMESPACE }} --values ./values.yaml --debug --wait
+          helm upgrade -i kong-iac kong/kong -n ${{ vars.KONG_NAMESPACE }} --values ./values.yaml --debug --wait --timeout 10m
+
+      - name: Diagnose deployment issues (if deployment fails)
+        if: failure()
+        run: |
+          echo "=== Deployment failed. Gathering diagnostic information ==="
+
+          echo "--- Pod Status ---"
+          kubectl get pods -n ${{ vars.KONG_NAMESPACE }} -o wide
+
+          echo "--- Pod Details ---"
+          kubectl describe pods -n ${{ vars.KONG_NAMESPACE }} -l app.kubernetes.io/name=kong
+
+          echo "--- Pod Events ---"
+          kubectl get events -n ${{ vars.KONG_NAMESPACE }} --sort-by='.lastTimestamp' | tail -30
+
+          echo "--- Pod Logs (if any) ---"
+          for pod in $(kubectl get pods -n ${{ vars.KONG_NAMESPACE }} -l app.kubernetes.io/name=kong -o name); do
+            echo "Logs for $pod:"
+            kubectl logs $pod -n ${{ vars.KONG_NAMESPACE }} --tail=100 || echo "Could not retrieve logs"
+          done
+
+          echo "--- Image Pull Secrets ---"
+          kubectl get secrets -n ${{ vars.KONG_NAMESPACE }} ghcr-secret -o yaml || echo "ghcr-secret not found"
+
+          echo "--- Helm Release Status ---"
+          helm status kong-iac -n ${{ vars.KONG_NAMESPACE }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
