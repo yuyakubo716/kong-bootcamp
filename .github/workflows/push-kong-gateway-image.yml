@@ -4,12 +4,12 @@ name: Push Kong Gateway Image to GHCR
 # このワークフローが実行されるタイミングを定義
 on:
   # GitHub UI から手動でトリガーのみ
-  workflow_dispatch:  # GitHub UI から手動でトリガー可能
+  workflow_dispatch: # GitHub UI から手動でトリガー可能
 
 # 環境変数の設定
 env:
-  REGISTRY: ghcr.io  # GitHub Container Registry のURL
-  IMAGE_NAME: api-pf/kong-bootcamp/kong-gateway  # イメージ名（小文字のみ）
+  REGISTRY: ghcr.io # GitHub Container Registry のURL
+  IMAGE_NAME: api-pf/kong-bootcamp/kong-gateway # イメージ名（小文字のみ）
 
 # ジョブの定義
 jobs:
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     # 必要な権限の設定
     permissions:
-      packages: write  # GitHubパッケージ（コンテナイメージ）を書き込む権限
+      packages: write # GitHubパッケージ（コンテナイメージ）を書き込む権限
 
     # 実行する一連のステップ
     steps:
@@ -27,9 +27,9 @@ jobs:
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}  # レジストリのURL（ghcr.io）
-          username: ${{ github.actor }}  # 現在のユーザー名（ワークフローを実行したユーザー）
-          password: ${{ secrets.GITHUB_TOKEN }}  # GitHubが自動的に提供する認証トークン
+          registry: ${{ env.REGISTRY }} # レジストリのURL（ghcr.io）
+          username: ${{ github.actor }} # 現在のユーザー名（ワークフローを実行したユーザー）
+          password: ${{ secrets.GITHUB_TOKEN }} # GitHubが自動的に提供する認証トークン
 
       # ステップ2: DockerHubからKong Gatewayイメージをプル
       - name: Pull Kong Gateway from DockerHub
@@ -41,10 +41,10 @@ jobs:
       - name: Tag images for GHCR
         run: |
           # GHCRのURLとリポジトリ名を使ってタグ付け
-          docker tag kong/kong-gateway:"${{ vars.KONG_VER }}" ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:"${{ vars.KONG_VER }}"
-      
+          docker tag kong/kong-gateway:${{ vars.KONG_VER }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ vars.KONG_VER }}
+
       # ステップ4: GHCRにイメージをプッシュ
       - name: Push images to GHCR
         run: |
           # タグ付けしたイメージをGHCRにプッシュ
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:"${{ vars.KONG_VER }}"
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ vars.KONG_VER }}
