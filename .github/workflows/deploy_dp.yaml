@@ -114,6 +114,21 @@ jobs:
               release: prometheus-operator
           EOF
 
+      - name: Check and fix Helm release status
+        run: |
+          # Helmリリースの状態を確認し、ロックされている場合は修復
+          if helm list -n ${{ vars.KONG_NAMESPACE }} | grep -q kong-iac; then
+            RELEASE_STATUS=$(helm status kong-iac -n ${{ vars.KONG_NAMESPACE }} -o json | jq -r '.info.status')
+            echo "Current release status: $RELEASE_STATUS"
+            
+            if [ "$RELEASE_STATUS" = "pending-install" ] || [ "$RELEASE_STATUS" = "pending-upgrade" ] || [ "$RELEASE_STATUS" = "pending-rollback" ]; then
+              echo "Release is locked in $RELEASE_STATUS state. Rolling back to clear lock..."
+              helm rollback kong-iac -n ${{ vars.KONG_NAMESPACE }} || true
+            fi
+          else
+            echo "No existing release found. Proceeding with fresh install."
+          fi
+
       - name: Deploy with Helm
         run: |
           helm repo add kong https://charts.konghq.com
