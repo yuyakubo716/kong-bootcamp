@@ -1,48 +1,39 @@
-# ワークフローの名前: Kong Gateway イメージのセキュリティスキャン
 name: Scan Kong Gateway Image
 
-# このワークフローが実行されるタイミングを定義
 on:
   # 別のワークフロー(Push Kong Gateway Image to GHCR)が完了した後に実行
   workflow_run:
     workflows: ["Push Kong Gateway Image to GHCR"]
     types:
       - completed
-  # GitHub上の「Actions」タブから手動で実行可能
   workflow_dispatch: # 手動トリガーも可能
 
-# 環境変数の設定
 env:
   REGISTRY: ghcr.io # GitHubのコンテナレジストリのURL
   IMAGE_NAME: api-pf/kong-bootcamp/kong-gateway # スキャン対象のイメージ名（小文字のみ）
 
-# ジョブの定義
 jobs:
-  # イメージスキャンジョブ
   scan-image:
-    # Ubuntuの最新バージョン上で実行
     runs-on: ubuntu-latest
-    # トリガーに応じた条件分岐
     # workflow_runイベントの場合は前のワークフローが成功した場合のみ実行
     # workflow_dispatchイベント（手動実行）の場合は常に実行
     if: >-
       github.event_name == 'workflow_dispatch' || 
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
-    # 必要な権限の設定
     permissions:
-      contents: read # リポジトリのコンテンツを読み取る権限
+      # contents: read # リポジトリのコンテンツを読み取る権限
       packages: read # GitHubパッケージ（コンテナイメージ）を読み取る権限
-      security-events: write # セキュリティスキャン結果をGitHubセキュリティタブに書き込む権限
-      id-token: write # OIDC認証のために必要
+      # security-events: write # セキュリティスキャン結果をGitHubセキュリティタブに書き込む権限
+      # id-token: write # OIDC認証のために必要
       actions: read # ワークフロー実行の情報へのアクセス権
 
     # 実行する一連のステップ
     steps:
-      # ステップ1: リポジトリのコードをチェックアウト（Dockerfileなどを利用するため）
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # # リポジトリのコードをチェックアウト
+      # - name: Checkout repository
+      #   uses: actions/checkout@v4
 
-      # ステップ2: GitHub Container Registryにログイン
+      # GitHub Container Registryにログイン
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -50,27 +41,15 @@ jobs:
           username: ${{ github.actor }} # 現在のユーザー名（ワークフローを実行したユーザー）
           password: ${{ secrets.GITHUB_TOKEN }} # GitHubが自動的に提供する認証トークン
 
-      # ステップ3: スキャン対象のKong Gatewayイメージをプル
+      # スキャン対象のKong Gatewayイメージをプル
       - name: Pull Kong Gateway image
         run: |
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ vars.KONG_VER }}
 
-      # テキスト形式でも出力（読みやすい形式）
-      - name: Run Trivy vulnerability scanner (テキスト形式)
+      # スキャン
+      - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ vars.KONG_VER }}" # スキャン対象のイメージ
-          format: "table" # 人間が読みやすいテーブル形式
-          # output: "trivy-results.txt" # 結果の出力先ファイル
+          format: "table"
           severity: "CRITICAL,HIGH" # 重要度が「重大」と「高」の脆弱性のみをスキャン
-
-
-      # # ステップ5: Trivyのスキャン結果をアップロード
-      # - name: Upload Trivy scan results
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: trivy-scan-results
-      #     path: |
-      #       trivy-results.sarif
-      #       trivy-results.txt
-      #     retention-days: 5 # 結果を保存する期間（日数）
