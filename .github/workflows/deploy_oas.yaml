@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - docs/openapi/api-spec.yaml
+      - kong-plugins/**
   workflow_dispatch:
 
 env:
