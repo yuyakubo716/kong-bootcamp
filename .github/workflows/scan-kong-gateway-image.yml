@@ -55,31 +55,22 @@ jobs:
         run: |
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ vars.KONG_VER }}
 
-      # ステップ4: Trivyを使用した脆弱性スキャン
-      # Trivyは、オープンソースの軽量コンテナスキャナー
-      - name: Run Trivy vulnerability scanner (SARIF形式)
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ vars.KONG_VER }}" # スキャン対象のイメージ
-          format: "sarif" # GitHub Security Dashboardで表示するためのフォーマット
-          output: "trivy-results.sarif" # 結果の出力先ファイル
-          severity: "CRITICAL,HIGH" # 重要度が「重大」と「高」の脆弱性のみをスキャン
-
       # テキスト形式でも出力（読みやすい形式）
       - name: Run Trivy vulnerability scanner (テキスト形式)
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ vars.KONG_VER }}" # スキャン対象のイメージ
           format: "table" # 人間が読みやすいテーブル形式
-          output: "trivy-results.txt" # 結果の出力先ファイル
+          # output: "trivy-results.txt" # 結果の出力先ファイル
           severity: "CRITICAL,HIGH" # 重要度が「重大」と「高」の脆弱性のみをスキャン
 
-      # ステップ5: Trivyのスキャン結果をアップロード
-      - name: Upload Trivy scan results
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-scan-results
-          path: |
-            trivy-results.sarif
-            trivy-results.txt
-          retention-days: 5 # 結果を保存する期間（日数）
+
+      # # ステップ5: Trivyのスキャン結果をアップロード
+      # - name: Upload Trivy scan results
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: trivy-scan-results
+      #     path: |
+      #       trivy-results.sarif
+      #       trivy-results.txt
+      #     retention-days: 5 # 結果を保存する期間（日数）
