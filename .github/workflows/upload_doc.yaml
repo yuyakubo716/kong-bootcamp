@@ -33,38 +33,13 @@ jobs:
           echo "Detected changes in $file"
 
           # Get Product ID from PRODUCT_NAME.
-          # First, get the full API response for debugging
-          api_response=$(curl -X GET -s \
+          PRODUCT_ID=$(curl -X GET -s \
                          ${REGIONAL_EP}/apis \
-                         -H "${AUTH_HEADER}")
-
-          echo "API Response:"
-          echo "$api_response" | jq '.'
-
-          # Check if the response is valid JSON
-          if ! echo "$api_response" | jq -e . >/dev/null 2>&1; then
-            echo "[Error] Invalid JSON response from API"
-            echo "Raw response: $api_response"
-            exit 1
-          fi
-
-          # Check for error in response (status field indicates error)
-          if echo "$api_response" | jq -e '.status' >/dev/null 2>&1; then
-            error_status=$(echo "$api_response" | jq -r '.status')
-            if [ "$error_status" -ge 400 ]; then
-              echo "[Error] API returned error (status: $error_status)"
-              echo "Title: $(echo "$api_response" | jq -r '.title')"
-              echo "Detail: $(echo "$api_response" | jq -r '.detail')"
-              exit 1
-            fi
-          fi
-
-          PRODUCT_ID=$(echo "$api_response" | jq -r '.data[] | select(.name == "'"$PRODUCT_NAME"'") | .id' || true)
+                         -H "${AUTH_HEADER}" \
+                       | jq -r '.data[] | select(.name == "'"$PRODUCT_NAME"'") | .id' || true)
 
           if [ "$(echo $PRODUCT_ID | wc -w)" -ne 1 ]; then
             echo "[Error] Failed to obtain PRODUCT_ID or obtained multiple PRODUCT_NAME: $PRODUCT_NAME, PRODUCT_IDs: $PRODUCT_ID"
-            echo "Available products:"
-            echo "$api_response" | jq -r '.data[].name'
             exit 1
           fi
 
