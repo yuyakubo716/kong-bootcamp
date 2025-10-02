@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - docs/product.md
+  workflow_dispatch:
 
 env:
   REGIONAL_EP: "https://${{ vars.KONNECT_REGION }}.api.konghq.com/v3"
