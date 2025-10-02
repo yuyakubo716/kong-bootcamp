@@ -61,3 +61,5 @@ flowchart TD
 ## 6. Conclusion
 By running httpbin in a containerized environment, you gain a **reliable, reproducible, and secure** way to test and experiment with HTTP interactions.  
 This approach is especially valuable when integrating with modern DevOps practices and Kubernetes-based platforms.
+
+Update: 2025/10/02 19:36(JST)
