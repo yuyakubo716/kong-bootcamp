@@ -35,7 +35,7 @@ jobs:
           # Get Product ID from PRODUCT_NAME.
           # First, get the full API response for debugging
           api_response=$(curl -X GET -s \
-                         ${REGIONAL_EP}/apis \
+                         ${REGIONAL_EP}/api-products \
                          -H "${AUTH_HEADER}")
 
           echo "API Response:"
@@ -48,10 +48,15 @@ jobs:
             exit 1
           fi
 
-          # Check for error in response
-          if echo "$api_response" | jq -e '.message' >/dev/null 2>&1; then
-            echo "[Error] API returned error: $(echo "$api_response" | jq -r '.message')"
-            exit 1
+          # Check for error in response (status field indicates error)
+          if echo "$api_response" | jq -e '.status' >/dev/null 2>&1; then
+            error_status=$(echo "$api_response" | jq -r '.status')
+            if [ "$error_status" -ge 400 ]; then
+              echo "[Error] API returned error (status: $error_status)"
+              echo "Title: $(echo "$api_response" | jq -r '.title')"
+              echo "Detail: $(echo "$api_response" | jq -r '.detail')"
+              exit 1
+            fi
           fi
 
           PRODUCT_ID=$(echo "$api_response" | jq -r '.data[] | select(.name == "'"$PRODUCT_NAME"'") | .id' || true)
@@ -68,7 +73,7 @@ jobs:
 
           # Get Document ID
           DOC_ID=$(curl -s -X GET \
-            ${REGIONAL_EP}/apis/${PRODUCT_ID}/documents \
+            ${REGIONAL_EP}/api-products/${PRODUCT_ID}/documents \
             -H "${AUTH_HEADER}" \
             | jq -r --arg filename "${filename}" '.data[] | select(.title == $filename) | .id' || true)
 
@@ -87,7 +92,7 @@ jobs:
                 title: $title,
                 content: $content
               }' > payload.json
-            UPLOAD_ENDPOINT=${REGIONAL_EP}/apis/${PRODUCT_ID}/documents
+            UPLOAD_ENDPOINT=${REGIONAL_EP}/api-products/${PRODUCT_ID}/documents
             METHOD=POST
           else
             # If the document exists, update it
@@ -95,7 +100,7 @@ jobs:
             # Create payload
             jq -n --rawfile content "$file" \
               '{content: $content}' > payload.json
-            UPLOAD_ENDPOINT=${REGIONAL_EP}/apis/${PRODUCT_ID}/documents/$DOC_ID
+            UPLOAD_ENDPOINT=${REGIONAL_EP}/api-products/${PRODUCT_ID}/documents/$DOC_ID
             METHOD=PATCH
           fi
 
