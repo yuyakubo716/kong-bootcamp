@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  REGIONAL_EP: "https://${{ vars.KONNECT_REGION }}.api.konghq.com/v3"
+  REGIONAL_EP: "https://${{ vars.KONNECT_REGION }}.api.konghq.com"
   AUTH_HEADER: "Authorization: Bearer ${{ secrets.KONNECT_TOKEN }}"
   PRODUCT_NAME: "${{ vars.PRODUCT_NAME }}"
 
