@@ -9,7 +9,7 @@ on:
 # 環境変数の設定
 env:
   REGISTRY: ghcr.io # GitHub Container Registry のURL
-  IMAGE_NAME: api-pf/kong-bootcamp/kong-gateway # イメージ名（小文字のみ）
+  IMAGE_NAME: ${{ vars.IMAGE_NAME }} # イメージ名（小文字のみ）
 
 # ジョブの定義
 jobs:
