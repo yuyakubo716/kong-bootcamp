@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kong-monitor
+  namespace: monitor
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: kong
+  namespaceSelector:
+    matchNames:
+      - kong
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      scheme: http
