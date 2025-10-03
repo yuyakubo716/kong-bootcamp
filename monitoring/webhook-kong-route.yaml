@@ -1,0 +1,43 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongIngress
+metadata:
+  name: webhook-kong-ingress
+  namespace: konnect-webhook
+route:
+  strip_path: false
+  preserve_host: true
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webhook-server-kong
+  namespace: konnect-webhook
+  annotations:
+    konghq.com/strip-path: "false"
+    konghq.com/preserve-host: "true"
+spec:
+  ingressClassName: kong
+  rules:
+    - http:
+        paths:
+          - path: /webhook
+            pathType: Prefix
+            backend:
+              service:
+                name: webhook-server
+                port:
+                  number: 80
+          - path: /healthz
+            pathType: Prefix
+            backend:
+              service:
+                name: webhook-server
+                port:
+                  number: 80
+          - path: /readyz
+            pathType: Prefix
+            backend:
+              service:
+                name: webhook-server
+                port:
+                  number: 80
