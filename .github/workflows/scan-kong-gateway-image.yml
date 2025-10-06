@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: api-pf/kong-bootcamp/kong-gateway
+  IMAGE_NAME: ${{ vars.IMAGE_NAME }}
 
 jobs:
   scan-image:
