@@ -1,0 +1,358 @@
+<mxfile host="65bd71144e">
+    <diagram name="Kong Bootcamp Architecture" id="kong-bootcamp-architecture">
+        <mxGraphModel dx="2332" dy="1210" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title" value="Neo Commerce - PoC - System Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="530" y="20" width="530" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="github-actions-container" value="GitHub Actions" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="100" width="720" height="480" as="geometry"/>
+                </mxCell>
+                <mxCell id="workflow-push" value="Push Kong Gateway Image" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" parent="github-actions-container" vertex="1">
+                    <mxGeometry x="30" y="50" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="workflow-push-detail" value="• DockerHubからPull&lt;br&gt;• GHCRにPush" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="github-actions-container" vertex="1">
+                    <mxGeometry x="30" y="120" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="workflow-scan" value="Scan Kong Gateway Image" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1" parent="github-actions-container" vertex="1">
+                    <mxGeometry x="260" y="50" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="workflow-scan-detail" value="• Trivy Scan&lt;br&gt;• CRITICAL/HIGH検出" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="github-actions-container" vertex="1">
+                    <mxGeometry x="260" y="120" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="workflow-deploy-dp" value="Deploy Kong Data Plane" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1" parent="github-actions-container" vertex="1">
+                    <mxGeometry x="490" y="50" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="workflow-deploy-dp-detail" value="• AKS接続&#xa;• TLS証明書生成&#xa;• Helmでデプロイ&#xa;• Konnect CPに接続" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="github-actions-container" vertex="1">
+                    <mxGeometry x="490" y="120" width="200" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="workflow-deploy-oas" value="Deploy OpenAPI Spec" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1" parent="github-actions-container" vertex="1">
+                    <mxGeometry x="30" y="220" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="workflow-deploy-oas-detail" value="• inso lint実行&#xa;• deck openapi2kong変換&#xa;• プラグイン追加&#xa;• deck gateway sync" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="github-actions-container" vertex="1">
+                    <mxGeometry x="30" y="290" width="200" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="workflow-portal" value="Create Dev Portal &amp; APIs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1" parent="github-actions-container" vertex="1">
+                    <mxGeometry x="260" y="220" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="workflow-portal-detail" value="• Dev Portal作成&#xa;• API Product作成&#xa;• APIバージョン作成&#xa;• Team/Role設定" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="github-actions-container" vertex="1">
+                    <mxGeometry x="260" y="290" width="200" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="workflow-upload" value="Upload Spec/Doc" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" parent="github-actions-container" vertex="1">
+                    <mxGeometry x="490" y="220" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="workflow-upload-detail" value="• API Specアップロード&#xa;• ドキュメント公開&#xa;• Dev Portalへ反映" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="github-actions-container" vertex="1">
+                    <mxGeometry x="490" y="290" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="k8s-container" value="Kubernetes (AKS)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=16;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="820" y="100" width="740" height="800" as="geometry"/>
+                </mxCell>
+                <mxCell id="ns-bookinfo" value="Namespace: bookinfo" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d0ece7;strokeColor=#0e8088;fontSize=14;fontStyle=1" vertex="1" parent="k8s-container">
+                    <mxGeometry x="380" y="280" width="340" height="230" as="geometry"/>
+                </mxCell>
+                <mxCell id="bookinfo-heading" value="Bookinfo Microservices" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" vertex="1" parent="ns-bookinfo">
+                    <mxGeometry x="20" y="50" width="300" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="bookinfo-services" value="• productpage (frontend)&#xa;• details (book data)&#xa;• reviews (v1/v2/v3)&#xa;• ratings (stars)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" vertex="1" parent="ns-bookinfo">
+                    <mxGeometry x="20" y="100" width="300" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="bookinfo-ingress" value="(Kong Route / Service 対象)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;align=left;" vertex="1" parent="ns-bookinfo">
+                    <mxGeometry x="20" y="190" width="300" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="ns-kong" value="Namespace: kong" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;fontStyle=1" parent="k8s-container" vertex="1">
+                    <mxGeometry x="20" y="40" width="340" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="kong-dp-pod" value="Kong Data Plane Pod" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" parent="ns-kong" vertex="1">
+                    <mxGeometry x="20" y="50" width="300" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="kong-dp-detail" value="• Image: ghcr.io/.../kong-gateway&#xa;• Port 8000: Proxy&#xa;• Port 8100: Status API (Metrics)&#xa;• TLS証明書でCP接続" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="ns-kong" vertex="1">
+                    <mxGeometry x="20" y="100" width="300" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="kong-plugins" value="Kong Plugins (Global)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontStyle=1" parent="ns-kong" vertex="1">
+                    <mxGeometry x="20" y="190" width="300" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="kong-plugins-detail" value="• prometheus (metrics収集)&#xa;• rate-limiting-advanced&#xa;• proxy-cache-advanced" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="ns-kong" vertex="1">
+                    <mxGeometry x="20" y="230" width="300" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="kong-metrics-svc" value="Service: kong-metrics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=11;fontStyle=1" parent="ns-kong" vertex="1">
+                    <mxGeometry x="20" y="300" width="300" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="ns-webhook" value="Namespace: konnect-webhook" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1" parent="k8s-container" vertex="1">
+                    <mxGeometry x="380" y="40" width="340" height="220" as="geometry"/>
+                </mxCell>
+                <mxCell id="webhook-server" value="Webhook Server Pod" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" parent="ns-webhook" vertex="1">
+                    <mxGeometry x="20" y="50" width="300" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="webhook-detail" value="• Python HTTP Server&#xa;• /webhook エンドポイント&#xa;• gzip圧縮対応&#xa;• Konnect Audit Log受信" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="ns-webhook" vertex="1">
+                    <mxGeometry x="20" y="100" width="300" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="webhook-ingress" value="Ingress (Kong)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=11;fontStyle=1" parent="ns-webhook" vertex="1">
+                    <mxGeometry x="20" y="180" width="300" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="ns-monitor" value="Namespace: monitor" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=14;fontStyle=1" parent="k8s-container" vertex="1">
+                    <mxGeometry x="20" y="540" width="700" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="prometheus" value="Prometheus" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" parent="ns-monitor" vertex="1">
+                    <mxGeometry x="20" y="70" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="prometheus-detail" value="• kube-prometheus-stack&#xa;• ServiceMonitorで&#xa;  kong-metricsをスクレイプ&#xa;• 30秒間隔" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="ns-monitor" vertex="1">
+                    <mxGeometry x="20" y="140" width="200" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="service-monitor" value="ServiceMonitor" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontStyle=1" parent="ns-monitor" vertex="1">
+                    <mxGeometry x="250" y="70" width="200" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="servicemon-detail" value="• kong namespace監視&#xa;• app=kong ラベル選択&#xa;• /metrics エンドポイント" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="ns-monitor" vertex="1">
+                    <mxGeometry x="250" y="120" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="grafana" value="Grafana" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1" parent="ns-monitor" vertex="1">
+                    <mxGeometry x="480" y="70" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="grafana-detail" value="• Prometheusデータ源&#xa;• Kong Gatewayダッシュボード&#xa;• メトリクス可視化" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="ns-monitor" vertex="1">
+                    <mxGeometry x="480" y="140" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.75;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#82b366;" parent="ns-monitor" source="servicemon-detail" target="prometheus-detail" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge13-label" value="Scrape Config" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" parent="edge13" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#9673a6;" parent="k8s-container" source="prometheus" target="grafana" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge14-label" value="Data Source" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" parent="edge14" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+                        <mxPoint x="-35" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="konnect-cloud" value="Kong Konnect (SaaS)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#b0e3e6;strokeColor=#0e8088;fontSize=16;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="620" width="720" height="250" as="geometry"/>
+                </mxCell>
+                <mxCell id="konnect-cp" value="Control Plane" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" parent="konnect-cloud" vertex="1">
+                    <mxGeometry x="30" y="50" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="konnect-cp-detail" value="• 構成管理&#xa;• Route/Service設定&#xa;• Plugin設定&#xa;• mTLS通信" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="konnect-cloud" vertex="1">
+                    <mxGeometry x="30" y="120" width="200" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="konnect-portal" value="Dev Portal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1" parent="konnect-cloud" vertex="1">
+                    <mxGeometry x="260" y="50" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="konnect-portal-detail" value="• API Product公開&#xa;• API Spec表示&#xa;• ドキュメント管理&#xa;• 開発者認証" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="konnect-cloud" vertex="1">
+                    <mxGeometry x="260" y="120" width="200" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="konnect-products" value="API Products" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1" parent="konnect-cloud" vertex="1">
+                    <mxGeometry x="490" y="50" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="konnect-products-detail" value="• 製品バージョン管理&#xa;• APIバージョニング&#xa;• アクセス制御" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=left;" parent="konnect-cloud" vertex="1">
+                    <mxGeometry x="490" y="120" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="dockerhub" value="DockerHub" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="920" width="150" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="ghcr" value="GitHub Container&#xa;Registry (GHCR)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="240" y="920" width="150" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;exitX=0.1;exitY=0.556;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#82b366;exitPerimeter=0;" parent="1" source="dockerhub" target="workflow-push" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint y="965"/>
+                            <mxPoint y="195"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge1-label" value="Pull Image" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" parent="edge1" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#6c8ebf;" parent="1" source="workflow-push" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="-30" y="180"/>
+                            <mxPoint x="-30" y="1040"/>
+                            <mxPoint x="315" y="1040"/>
+                        </Array>
+                        <mxPoint x="315" y="1020" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge2-label" value="Push Image" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" parent="edge2" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;strokeWidth=2;dashed=1;strokeColor=#666666;" parent="1" source="workflow-push" target="workflow-scan" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="170" y="140"/>
+                            <mxPoint x="400" y="140"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge3-label" value="trigger" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" parent="edge3" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#d79b00;entryPerimeter=0;" parent="1" source="workflow-scan" target="ghcr" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="280" y="195"/>
+                            <mxPoint x="280" y="860"/>
+                            <mxPoint x="315" y="860"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge4-label" value="Scan" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" parent="edge4" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#9673a6;" parent="1" source="workflow-deploy-dp" target="kong-dp-pod" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="800" y="180"/>
+                            <mxPoint x="800" y="210"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge6-label" value="Helm Deploy" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" parent="edge6" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;strokeWidth=2;dashed=1;strokeColor=#0e8088;" parent="1" source="workflow-deploy-dp-detail" target="konnect-cp" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="740" y="255"/>
+                            <mxPoint x="740" y="500"/>
+                            <mxPoint x="170" y="500"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge7-label" value="Register CP" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" parent="edge7" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#d6b656;" parent="1" source="workflow-deploy-oas-detail" target="konnect-cp" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge8-label" value="deck sync" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" parent="edge8" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#9673a6;" parent="1" source="workflow-portal-detail" target="konnect-portal" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge9-label" value="Create Portal" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" parent="edge9" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#82b366;" parent="1" source="workflow-upload-detail" target="konnect-products" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge10-label" value="Upload Spec/Doc" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" parent="edge10" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;strokeWidth=3;strokeColor=#0e8088;dashed=1;" parent="1" source="kong-dp-detail" target="konnect-cp-detail" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="800" y="275"/>
+                            <mxPoint x="800" y="840"/>
+                            <mxPoint x="170" y="840"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge11-label" value="mTLS Connection" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1" parent="edge11" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+                        <mxPoint x="-171" y="47" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-kong-to-bookinfo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#0e8088;" edge="1" parent="1" source="kong-dp-pod" target="bookinfo-heading">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1180" y="210"/>
+                            <mxPoint x="1180" y="450"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-kong-to-bookinfo-label" value="Kong Routes / Upstream" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" connectable="0" vertex="1" parent="edge-kong-to-bookinfo">
+                    <mxGeometry x="-0.2" y="1" relative="1" as="geometry">
+                        <mxPoint x="-1" y="-70" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#10739e;" parent="1" source="kong-metrics-svc" target="service-monitor" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1010" y="560"/>
+                            <mxPoint x="1190" y="560"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge12-label" value="Monitor" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" parent="edge12" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+                        <mxPoint x="-6" y="1" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;strokeWidth=2;strokeColor=#6c8ebf;dashed=1;" parent="1" source="konnect-cp-detail" target="webhook-detail" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="220" y="820"/>
+                            <mxPoint x="780" y="820"/>
+                            <mxPoint x="780" y="540"/>
+                            <mxPoint x="1190" y="540"/>
+                            <mxPoint x="1190" y="275"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge15-label" value="Audit Log Webhook" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" parent="edge15" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+                        <mxPoint x="-149" y="130" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="legend-container" value="Legend" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="820" y="920" width="300" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend1" value="CI/CD Workflow" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" parent="legend-container" vertex="1">
+                    <mxGeometry x="20" y="40" width="120" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend2" value="Kubernetes Resource" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" parent="legend-container" vertex="1">
+                    <mxGeometry x="160" y="40" width="120" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend3" value="External Service" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" parent="legend-container" vertex="1">
+                    <mxGeometry x="20" y="90" width="120" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend4" value="Data Flow" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;" parent="legend-container" vertex="1">
+                    <mxGeometry x="160" y="90" width="80" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend4-arrow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;" parent="legend-container" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="245" y="105" as="sourcePoint"/>
+                        <mxPoint x="270" y="105" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="legend5" value="Trigger/Event" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;" parent="legend-container" vertex="1">
+                    <mxGeometry x="160" y="130" width="80" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend5-arrow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;dashed=1;" parent="legend-container" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="245" y="145" as="sourcePoint"/>
+                        <mxPoint x="270" y="145" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="notes" value="【システム概要】&lt;br&gt;1. GitHub ActionsでKong Gatewayイメージをスキャン・管理&lt;br&gt;2. Data PlaneをAKS上にデプロイ&lt;br&gt;3. KonnectのControl Planeと接続してAPI Gatewayを構成&lt;br&gt;4. Prometheus/GrafanaでKongメトリクスを監視&lt;br&gt;5. Dev PortalでAPI公開・管理&lt;div&gt;&lt;span style=&quot;color: rgb(0, 0, 0); font-size: 10px;&quot;&gt;6. Bookinfoサンプルアプリをbuild-services.shでビルドしGHCRへ登録、Kong経由でproductpageへルーティング&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="1160" y="920" width="400" height="200" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
