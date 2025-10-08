@@ -84,30 +84,6 @@ paths:
                 $ref: "#/components/schemas/ProductReviews"
         "400":
           description: Invalid product id
-  "/products/{id}/ratings":
-    get:
-      tags:
-        - rating
-      summary: Get ratings for a product
-      description: Get ratings for a product, including stars and their color.
-      operationId: getProductRatings
-      parameters:
-        - name: id
-          in: path
-          description: Product id
-          required: true
-          schema:
-            type: integer
-            format: int32
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProductRatings"
-        "400":
-          description: Invalid product id
 servers:
   - url: http://10.0.80.64:9080/api/v1
 components:
